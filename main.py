@@ -2,9 +2,11 @@ from fastapi import FastAPI, Form, Request
 from fastapi.templating import Jinja2Templates
 from retrieval import retrieve_documents
 from generation import generate_answer
-#from llm_assignment.rag_project_local.generation import generate_answer
-
 import uvicorn
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Initialize FastAPI app and templates
 app = FastAPI()
@@ -27,28 +29,17 @@ async def query(request: Request, question: str = Form(...)):
         TemplateResponse: Rendered HTML with question and answer.
     """
     # Retrieve relevant documents
-    # documents = retrieve_documents(question)
+    documents = retrieve_documents(question)
     
-    # # Generate the answer
-    # answer = generate_answer(question, documents)
+    # Generate the answer
+    answer = generate_answer(question, documents)
     
-    # # Render the response
-    # return templates.TemplateResponse(
-    #     "index.html",
-    #     {"request": request, "question": question, "answer": answer}
-    # )
-     # Retrieve relevant documents
-    documents = retrieve_documents(question, top_k=3)
-    context = "\n".join([doc["content"] for doc in documents])
-    
-    #mai trebuie sa ma uit putin pe partea asta de raspuns
-    #de updatat readme
-
-    # Generate answer using OpenAI
-    answer = generate_answer(question, context)
-    
-    return templates.TemplateResponse("index.html", {"request": request, "question": question, "answer": answer})
-
+    # Render the response
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request, "question": question, "answer": answer}
+    )
+#Main
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",

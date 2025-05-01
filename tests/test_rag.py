@@ -3,16 +3,38 @@ import pytest
 import weaviate
 from weaviate.classes.init import Auth
 from sentence_transformers import SentenceTransformer
-from retrieval import retrieve_documents
+from rag_project_local.retrieval import retrieve_documents
+import openai
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 @pytest.fixture(scope="module")
-def weaviate_client():
+def weaviate_config():
+    """Fixture to provide Weaviate configuration."""
+    return {
+        "url": os.getenv("WEAVIATE_URL"),
+        "api_key": os.getenv("WEAVIATE_API_KEY")
+    }
+
+@pytest.fixture(scope="module")
+def openai_config():
+    """Fixture to provide OpenAI configuration."""
+    return {
+        "api_key": os.getenv("OPENAI_API_KEY")
+    }
+
+@pytest.fixture(scope="module")
+def weaviate_client(weaviate_config):
     """Fixture to set up and tear down Weaviate client."""
-    weaviate_url = os.environ["WEAVIATE_URL"]
-    weaviate_api_key = os.environ["WEAVIATE_API_KEY"]
+    url = weaviate_config["url"]
+    api_key = weaviate_config["api_key"]
+    assert url is not None, "WEAVIATE_URL is not set in .env"
+    assert api_key is not None, "WEAVIATE_API_KEY is not set in .env"
     client = weaviate.connect_to_weaviate_cloud(
-        cluster_url=weaviate_url,
-        auth_credentials=Auth.api_key(weaviate_api_key),
+        cluster_url=url,
+        auth_credentials=Auth.api_key(api_key)
     )
     yield client
     client.close()
@@ -30,6 +52,42 @@ def sample_data():
             "content": "Deutsche Telekom partners with Siemens to deploy IoT solutions for smart cities using NB-IoT technology."
         }
     ]
+
+def test_weaviate_connection(weaviate_config):
+    """Test that the Weaviate API key is valid and the connection is successful."""
+    url = weaviate_config["url"]
+    api_key = weaviate_config["api_key"]
+    
+    assert url is not None, "WEAVIATE_URL is not set in .env"
+    assert api_key is not None, "WEAVIATE_API_KEY is not set in .env"
+    
+    client = weaviate.connect_to_weaviate_cloud(
+        cluster_url=url,
+        auth_credentials=Auth.api_key(api_key)
+    )
+    try:
+        assert client.is_ready(), "Failed to connect to Weaviate cluster"
+    finally:
+        client.close()
+
+def test_openai_connection(openai_config):
+    """Test that the OpenAI API key is valid and a simple API call succeeds."""
+    api_key = openai_config["api_key"]
+    
+    assert api_key is not None, "OPENAI_API_KEY is not set in .env"
+    
+    openai.api_key = api_key
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": "Test connection"}],
+            max_tokens=10
+        )
+        assert response.choices[0].message.content, "OpenAI API call failed"
+    except openai.error.AuthenticationError:
+        pytest.fail("Invalid OpenAI API key")
+    except openai.error.RateLimitError:
+        pytest.fail("OpenAI quota exceeded")
 
 def test_ingestion(weaviate_client, sample_data):
     """Test that documents are ingested into Weaviate with correct properties and vectors."""
@@ -73,3 +131,4 @@ def test_retrieval(weaviate_client, sample_data):
     
     assert len(documents) > 0, "No documents retrieved"
     assert any("RTL Deutschland" in doc["content"] for doc in documents), "Relevant document not retrieved"
+

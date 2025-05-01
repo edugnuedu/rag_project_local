@@ -154,11 +154,12 @@ pytest tests/test_rag.py -v
 
 Tests:
 
+Tests:
+
+test_weaviate_connection: Verifies the Weaviate API key and connection to the cluster.
+test_openai_connection: Verifies the OpenAI API key and a simple API call.
 test_ingestion: Verifies documents are ingested into Weaviate with correct properties and vectors.
-
 test_retrieval: Checks that querying returns relevant documents.
-
-Expected: 2 passed.
 
 
 Notes

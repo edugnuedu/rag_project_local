@@ -39,23 +39,55 @@ model = SentenceTransformer('all-MiniLM-L6-v2')
 # Directory containing press releases
 data_dir = os.getenv("DATA_DIR")
 
+# Valid file extensions 
+VALID_EXTENSIONS = {'.txt'}
+
 # Ingest documents into Weaviate
 try:
+    # Get all files in the data directory
     files = os.listdir(data_dir)
-    print(f"Found {len(files)} files to ingest.")
+    valid_files = []
+    
+    # Filter files by extension and readability
+    for filename in files:
+        file_path = os.path.join(data_dir, filename)
+        # Check if it's a file  and has a valid extension
+        if os.path.isfile(file_path) and os.path.splitext(filename)[1].lower() in VALID_EXTENSIONS:
+            try:
+                # Test if the file is readable and text-based
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    f.read(1024)  # Read a small portion to verify
+                valid_files.append(filename)
+            except (UnicodeDecodeError, IOError) as e:
+                print(f"Skipping {filename}: Not a valid text file ({e})")
+        else:
+            print(f"Skipping {filename}: Invalid file extension or not a file")
+
+    print(f"Found {len(files)} files, {len(valid_files)} valid .txt files to ingest.")
+
+    if not valid_files:
+        print("No valid files to ingest.")
+        exit(1)
+
+    # Ingest valid files
     collection = client.collections.get(schema_class)
     with collection.batch.dynamic() as batch:
-        for filename in files:
+        for filename in valid_files:
             file_path = os.path.join(data_dir, filename)
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            # Generate embedding
-            embedding = model.encode(content).tolist()
-            # Add to Weaviate batch
-            batch.add_object(
-                properties={"filename": filename, "content": content},
-                vector=embedding
-            )
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                # Generate embedding
+                embedding = model.encode(content).tolist()
+                # Add to Weaviate batch
+                batch.add_object(
+                    properties={"filename": filename, "content": content},
+                    vector=embedding
+                )
+                print(f"Ingested {filename}")
+            except Exception as e:
+                print(f"Error ingesting {filename}: {e}")
+
     print("Ingestion completed successfully.")
 except Exception as e:
     print(f"Error during ingestion: {e}")
