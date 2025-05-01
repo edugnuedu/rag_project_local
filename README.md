@@ -1,6 +1,4 @@
 
-Repo : https://github.com/edugnuedu/rag_project_local
-
 RAG Application for Press Release Analysis
 
 Overview
@@ -46,7 +44,7 @@ Navigate to the dashboard and click Create Cluster.
 Name: rag-test (or your choice).
 Type: Sandbox (free for 14 days).
 Region: Europe (e.g., europe-west3).
-Confirm creation (URL: https://udqt4jehtjilvgfhnadeaa.c0.europe-west3.gcp.weaviate.cloud).
+Confirm creation.
 
 Step 3: Obtain the Weaviate API Key:
 In the Weaviate Cloud Console, go to your cluster’s Details or API Keys section.
@@ -73,7 +71,6 @@ Follow these steps to set up and run the project locally:
 1. Clone 
 https://github.com/edugnuedu/rag_project_local
 
-
 git clone https://github.com/your-username/rag-project.git
 cd rag_project
 
@@ -85,7 +82,6 @@ If not already set up, create the directory structure and add the necessary file
 cd D:\rag_project_local
 python -m venv venv
 .\venv\Scripts\activate
-
 
 Prompt should show (venv).
 
@@ -106,11 +102,9 @@ pytest==8.3.3
 Install dependencies:
 pip install -r requirements.txt
 
-
 4. Configure Environment Variables
 
 Create or update D:\rag_project_local\.env:
-
 OPENAI_API_KEY=your_openai_api_key
 WEAVIATE_URL=your_weaviate_url
 WEAVIATE_API_KEY=your_weaviate_api_key
@@ -148,22 +142,16 @@ Open http://localhost:8000 in a browser.
 Enter a question (e.g., “What is the purpose of the 5G campus network for RTL Deutschland?”).
 Expected: Displays the question and a relevant answer from GPT-3.5-turbo.
 
-
 5.Automated Tests
 pytest tests/test_rag.py -v
 
 Tests:
-
-Tests:
-
 test_weaviate_connection: Verifies the Weaviate API key and connection to the cluster.
 test_openai_connection: Verifies the OpenAI API key and a simple API call.
 test_ingestion: Verifies documents are ingested into Weaviate with correct properties and vectors.
 test_retrieval: Checks that querying returns relevant documents.
 
-
 Notes
-
 Weaviate Cloud: The sandbox cluster (created 4/30/2025) expires after 14 days. Create a new sandbox or upgrade if needed.
 API Key Security: Never share OPENAI_API_KEY or WEAVIATE_API_KEY. Keep them in .env.
 Performance: Weaviate Cloud handles large datasets efficiently, but ingestion time depends on file count and network speed.
@@ -200,4 +188,5 @@ Stop: Press Ctrl+C or run docker stop <container_id>.
 Run Tests in Container:
 docker run --env-file .env rag-app:latest pytest tests/test_rag.py -v
 
+Note:
 Docker: The container is stateless; ingestion must be run before queries if the Weaviate collection is empty.
