@@ -168,3 +168,36 @@ Weaviate Cloud: The sandbox cluster (created 4/30/2025) expires after 14 days. C
 API Key Security: Never share OPENAI_API_KEY or WEAVIATE_API_KEY. Keep them in .env.
 Performance: Weaviate Cloud handles large datasets efficiently, but ingestion time depends on file count and network speed.
 
+
+
+Docker Setup and Run
+
+The application can be containerized using Docker for portability and consistent deployment.
+Prerequisites
+
+Docker Desktop: Install from Docker Desktop for Windows.
+Verify:docker --version
+
+Ensure Docker Desktop is running.
+
+Build and Run
+
+Navigate to Project Root:
+cd path_to_project\rag_project_local
+
+Build Docker Image:
+docker build -t rag-app:latest .
+
+Run Ingestion in Container:
+docker run --env-file .env rag-app:latest python ingestion.py
+
+Run Container:
+docker run --env-file .env -p 8000:8000 rag-app:latest
+
+Access the web app at http://localhost:8000.
+Stop: Press Ctrl+C or run docker stop <container_id>.
+
+Run Tests in Container:
+docker run --env-file .env rag-app:latest pytest tests/test_rag.py -v
+
+Docker: The container is stateless; ingestion must be run before queries if the Weaviate collection is empty.
