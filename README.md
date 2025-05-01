@@ -152,7 +152,6 @@ Expected: Displays the question and a relevant answer from GPT-3.5-turbo.
 5.Automated Tests
 pytest tests/test_rag.py -v
 
-Tests:
 
 Tests:
 
