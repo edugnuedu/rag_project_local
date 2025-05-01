@@ -46,7 +46,7 @@ Navigate to the dashboard and click Create Cluster.
 Name: rag-test (or your choice).
 Type: Sandbox (free for 14 days).
 Region: Europe (e.g., europe-west3).
-Confirm creation (URL: https://udqt4jehtjilvgfhnadeaa.c0.europe-west3.gcp.weaviate.cloud).
+Confirm creation.
 
 Step 3: Obtain the Weaviate API Key:
 In the Weaviate Cloud Console, go to your cluster’s Details or API Keys section.
