@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deutsche Telekom Press Release Q&A</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        form { margin: 20px 0; }
+        input[type="text"] { width: 300px; padding: 5px; }
+        button { padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1>Ask a Question About Deutsche Telekom Press Releases</h1>
+    <form method="post" action="/query">
+        <input type="text" name="question" placeholder="Type your question here" required>
+        <button type="submit">Ask</button>
+    </form>
+    {% if answer %}
+        <h2>Question:</h2>
+        <p>{{ question }}</p>
+        <h2>Answer:</h2>
+        <p>{{ answer }}</p>
+    {% endif %}
+</body>
+</html>
