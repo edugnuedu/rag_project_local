@@ -1,4 +1,6 @@
 
+Repo : https://github.com/edugnuedu/rag_project_local
+
 RAG Application for Press Release Analysis
 
 Overview
@@ -6,8 +8,6 @@ Overview
 This project implements a Retrieval-Augmented Generation (RAG) application designed to process and query press release documents. It uses Weaviate (a vector database) to store and retrieve document embeddings, Sentence Transformers to generate embeddings, OpenAI's GPT-3.5-turbo for answer generation, and FastAPI to provide a web interface for querying. The application is built to run locally, connecting to a Weaviate Cloud cluster for vector storage and retrieval.
 The project ingests text files from a data directory, embeds them using a pre-trained Sentence Transformer model (all-MiniLM-L6-v2), stores them in Weaviate, and allows users to query the documents via a web interface. 
 Retrieved documents are used as context for GPT-3.5-turbo to generate accurate, contextually relevant answers.
-
-Project Structure
 
 rag_project_local/
 ├── main.py                # FastAPI app for the web interface
@@ -20,8 +20,11 @@ rag_project_local/
 │   ├── 0.txt             # Sample press release
 │   ├── 1.txt             # Sample press release
 │   └── ...               # Additional press release files
-├── requirements.txt      # Python dependencies
+├── tests/
+│   └── test_rag.py       # Pytest tests for ingestion and retrieval
+├── requirements.txt       # Python dependencies
 ├── .env                  # Environment variables (API keys, paths)
+├── .gitignore            # Git ignore file
 └── README.md             # This file
 
 Components
@@ -67,7 +70,14 @@ Setup Instructions:
 
 Follow these steps to set up and run the project locally:
 
-1. Clone or Set Up the Project
+1. Clone 
+https://github.com/edugnuedu/rag_project_local
+
+
+git clone https://github.com/your-username/rag-project.git
+cd rag_project
+
+Or Set Up the Project
 
 If not already set up, create the directory structure and add the necessary files (see Project Structure).
 
@@ -90,6 +100,8 @@ weaviate-client==4.8.1
 openai==0.28.1
 huggingface_hub==0.23.4
 python-dotenv==1.0.1
+python-multipart==0.0.20
+pytest==8.3.3
 
 Install dependencies:
 pip install -r requirements.txt
@@ -100,13 +112,14 @@ pip install -r requirements.txt
 Create or update D:\rag_project_local\.env:
 
 OPENAI_API_KEY=your_openai_api_key
-WEAVIATE_URL=https://udqt4jehtjilvgfhnadeaa.c0.europe-west3.gcp.weaviate.cloud
+WEAVIATE_URL=your_weaviate_url
 WEAVIATE_API_KEY=your_weaviate_api_key
-DATA_DIR=D:\Dev\02.Python\PycharmProjects\04.TestForDTRAGLLMApp\llm_assignment\rag_project_local\data
+DATA_DIR= your_project_path\data 
 
 Replace your_openai_api_key with the key from OpenAI (starts with sk-).
 Replace your_weaviate_api_key with the key from Weaviate Cloud Console.
-
+Replace your_weaviate_url with the URL from Weaviate Cloud Console.
+Replace your_project_path with the path for the repo.
 
 4. Running the Application
 
@@ -134,6 +147,18 @@ Use the Web Interface:
 Open http://localhost:8000 in a browser.
 Enter a question (e.g., “What is the purpose of the 5G campus network for RTL Deutschland?”).
 Expected: Displays the question and a relevant answer from GPT-3.5-turbo.
+
+
+5.Automated Tests
+pytest tests/test_rag.py -v
+
+Tests:
+
+test_ingestion: Verifies documents are ingested into Weaviate with correct properties and vectors.
+
+test_retrieval: Checks that querying returns relevant documents.
+
+Expected: 2 passed.
 
 
 Notes
